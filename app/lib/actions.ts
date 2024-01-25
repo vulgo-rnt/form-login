@@ -3,6 +3,8 @@
 import { z } from "zod";
 import { getUser } from "./data";
 import bcrypt from "bcrypt";
+import { redirect } from "next/navigation";
+import { setCookie, setJWT } from "./tokens";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -24,5 +26,8 @@ export async function authenticate(
 
   if (!passwordsMatch) return "Credencias invalida";
 
-  return "true";
+  const token = setJWT(user);
+  setCookie(token);
+
+  redirect("/profile");
 }
