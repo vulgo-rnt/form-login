@@ -1,14 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { verifyAuth } from "./app/lib/auth";
 
-export function middleware(request: NextRequest) {
-  const currentUser = request.cookies.get("token")?.value;
-  console.log(request.headers.get("authorization"));
+export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
 
-  if (currentUser) {
+  const verifiedToken = await verifyAuth(request).catch((err) => {
+    console.error(err.message);
+  });
+
+  if (!verifiedToken) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  } else if (verifiedToken && path !== "/profile") {
     return NextResponse.redirect(new URL("/profile", request.url));
   }
-  return NextResponse.redirect(new URL("/login", request.url));
+  return NextResponse.next();
 }
 
 export const config = {
