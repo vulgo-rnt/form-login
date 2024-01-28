@@ -11,8 +11,6 @@ export async function middleware(request: NextRequest) {
 
   if (!verifiedToken) {
     return NextResponse.redirect(new URL("/login", request.url));
-  } else if (verifiedToken && path !== "/profile") {
-    return NextResponse.redirect(new URL("/profile", request.url));
   }
   return NextResponse.next();
 }
