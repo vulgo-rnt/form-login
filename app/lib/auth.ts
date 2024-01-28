@@ -19,7 +19,7 @@ export async function verifyAuth(req: NextRequest) {
 export async function setUserCookie() {
   const secret = process.env.JWT_SECRET;
   const token = await new SignJWT({})
-    .setProtectedHeader({ alg: "RS256" })
+    .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
     .sign(new TextEncoder().encode(secret));
