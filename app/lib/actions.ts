@@ -15,18 +15,19 @@ export async function authenticate(
     .object({ email: z.string().email(), password: z.string().min(6) })
     .safeParse(data);
 
-  if (!parsedCredentials.success) return "Credencias invalida";
+  if (!parsedCredentials.success)
+    return parsedCredentials.error.errors[0].message;
 
   const { email, password } = parsedCredentials.data;
   const user = await getUser(email);
 
-  if (!user) return "Usuario não registrado";
+  if (!user) return "Unregistered User";
 
   const passwordsMatch = await bcrypt.compare(password, user.password);
 
-  if (!passwordsMatch) return "Credencias invalida";
+  if (!passwordsMatch) return "Invalid Password";
 
-  await setUserCookie();
+  await setUserCookie(user);
 
   redirect("/profile");
 }
