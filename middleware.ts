@@ -3,8 +3,6 @@ import type { NextRequest } from "next/server";
 import { verifyAuth } from "./app/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  const path = request.nextUrl.pathname;
-
   const verifiedToken = await verifyAuth(request).catch((err) => {
     console.error(err.message);
   });
