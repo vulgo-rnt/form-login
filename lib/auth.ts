@@ -17,6 +17,7 @@ export async function verifyAuth(req: NextRequest) {
 }
 
 export async function setUserCookie(user: User) {
+  cookies().delete('access_token')
   const secret = process.env.JWT_SECRET;
   const { name, email } = user;
   const token = await new SignJWT({ name, email })

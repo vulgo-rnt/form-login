@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyAuth } from "./app/lib/auth";
+import { verifyAuth } from "./lib/auth";
 
 export async function middleware(request: NextRequest) {
   const verifiedToken = await verifyAuth(request).catch((err) => {
