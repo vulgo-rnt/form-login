@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
-import { createAccount } from "../lib/actions";
+import { createAccount } from "../../lib/actions";
 
 export default function Page() {
   const [errorMessage, dispatch] = useFormState(createAccount, undefined);
