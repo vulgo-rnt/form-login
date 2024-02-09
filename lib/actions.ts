@@ -5,7 +5,6 @@ import { getUser, includesEmail, insertUser } from "./data";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
 import { setUserCookie } from "./auth";
-import checkPassword from "@/common/stringHandling/checkPassword";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -49,15 +48,21 @@ export async function createAccount(
         message: "username:Nome deve conter no maximo 20 caracteres",
       }),
       email: z.string().email({ message: "email:Email invalido" }),
-      password: z.string().min(6).max(60),
-      confirmed_password: z.string().min(6).max(60),
+      password: z
+        .string()
+        .min(6, {
+          message: "password:Senha deve conter no minimo 6 caracteres",
+        })
+        .max(60, {
+          message: "password:Senha deve conter no maximo 60 caracteres",
+        }),
+      confirmed_password: z.string(),
     })
     .refine(async (data) => !(await includesEmail(data.email)), {
       message: "email:Email já existente",
     })
-    .refine((data) => !checkPassword(data.password), {
-      message:
-        "password:Senha deve conter pelo menos 6 caractes e uma letra maiuscula",
+    .refine((data) => /[A-Z]/.test(data.password), {
+      message: "password:Senha deve conter uma letra maiuscula",
     })
     .refine((data) => data.password === data.confirmed_password, {
       message: "confirmed_password:Senhas devem ser iguais",

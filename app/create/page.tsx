@@ -12,6 +12,7 @@ export default function Page() {
 
   useEffect(() => {
     const objectError = errorTyping(error);
+    console.log(objectError);
     setMessageError(objectError);
     if (objectError.type === "alert") alert(objectError.message);
   }, [error]);
@@ -115,6 +116,8 @@ function FormButton({ children }: ChildrenProps) {
 
 function ParagError({ children }: ChildrenProps) {
   return (
-    <p className="mt-2 text-sm text-red-600 dark:text-red-500">{children}</p>
+    <p className="mt-2 text-sm bg-clip-text text-red-600 dark:text-red-500">
+      {children}
+    </p>
   );
 }
