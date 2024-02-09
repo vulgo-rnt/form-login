@@ -5,6 +5,7 @@ import { getUser, includesEmail, insertUser } from "./data";
 import bcrypt from "bcrypt";
 import { redirect } from "next/navigation";
 import { setUserCookie } from "./auth";
+import checkPassword from "@/common/stringHandling/checkPassword";
 
 export async function authenticate(
   prevState: string | undefined,
@@ -12,7 +13,12 @@ export async function authenticate(
 ) {
   const data = Object.fromEntries(formData);
   const parsedCredentials = z
-    .object({ email: z.string().email(), password: z.string().min(6) })
+    .object({
+      email: z.string().email({ message: "username:Email invalido" }),
+      password: z.string().min(6, {
+        message: "password:Senha deve conter no minimo 6 caracteres",
+      }),
+    })
     .safeParse(data);
 
   if (!parsedCredentials.success)
@@ -21,11 +27,11 @@ export async function authenticate(
   const { email, password } = parsedCredentials.data;
   const user = await getUser(email);
 
-  if (!user) return "Unregistered User";
+  if (!user) return "username:Usuario não registrado";
 
   const passwordsMatch = await bcrypt.compare(password, user.password);
 
-  if (!passwordsMatch) return "Invalid Password";
+  if (!passwordsMatch) return "password:Senha invalida";
 
   await setUserCookie(user);
 
@@ -39,18 +45,22 @@ export async function createAccount(
   const data = Object.fromEntries(formData);
   const parsedCredentials = await z
     .object({
-      name: z
-        .string()
-        .max(20, { message: "Nome deve conter no minimo 20  caracteres" }),
-      email: z.string().email({ message: "Email invalido" }),
+      name: z.string().max(20, {
+        message: "username:Nome deve conter no maximo 20 caracteres",
+      }),
+      email: z.string().email({ message: "email:Email invalido" }),
       password: z.string().min(6).max(60),
       confirmed_password: z.string().min(6).max(60),
     })
     .refine(async (data) => !(await includesEmail(data.email)), {
-      message: "Email já existente",
+      message: "email:Email já existente",
+    })
+    .refine((data) => !checkPassword(data.password), {
+      message:
+        "password:Senha deve conter pelo menos 6 caractes e uma letra maiuscula",
     })
     .refine((data) => data.password === data.confirmed_password, {
-      message: "Senhas devem ser iguais",
+      message: "confirmed_password:Senhas devem ser iguais",
     })
     .safeParseAsync(data);
 

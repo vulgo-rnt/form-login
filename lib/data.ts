@@ -30,8 +30,8 @@ export async function insertUser(user: User) {
   try {
     await sql`INSERT INTO users (id, name, email, password)
     VALUES (${id}, ${name}, ${email}, ${encryptPassword})`;
-    return "Cadastrado com sucesso";
+    return "alert:Cadastrado com sucesso";
   } catch (error) {
-    return "Erro ao se cadastrar";
+    return "alert:Erro ao se cadastrar";
   }
 }
